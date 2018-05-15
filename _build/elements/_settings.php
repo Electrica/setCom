@@ -1,9 +1,16 @@
 <?php
 
 return [
-    'some_setting' => [
+    'hidemenu_default' => [
         'xtype' => 'combo-boolean',
-        'value' => true,
-        'area' => 'setcom_main',
+        'value' => 1,
+        'area' => 'site',
+        'namespace' => 'core'
+    ],
+    'publish_default' => [
+        'xtype' => 'combo-boolean',
+        'value' => 1,
+        'area' => 'site',
+        'namespace' => 'core'
     ],
 ];

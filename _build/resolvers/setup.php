@@ -16,6 +16,38 @@ $packages = [
         'version' => '2.10.0-pl',
         'service_url' => 'modstore.pro',
     ],
+    'FormIt' => [
+        'version' => '1.0.0',
+        'service_url' => 'modx.com'
+    ],
+    'AjaxForm' => [
+        'version' => '1.0.0',
+        'service_url' => 'modstore.pro'
+    ],
+    'miniShop2' => [
+        'version' => '1.0.0',
+        'service_url' => 'modstore.pro'
+    ],
+    'BannerY' => [
+        'version' => '1.0.0',
+        'service_url' => 'modstore.pro'
+    ],
+    'VersionX' => [
+        'version' => '1.0.0',
+        'service_url' => 'modx.com'
+    ],
+    'frontendManager' => [
+        'version' => '1.0.0',
+        'service_url' => 'modstore.pro'
+    ],
+    'translit' => [
+        'version' => '1.0.0',
+        'service_url' => 'modx.com'
+    ],
+    'TinyMCE Rich Text Editor' => [
+        'version' => '1.0.0',
+        'service_url' => 'modx.com'
+    ]
 ];
 
 $downloadPackage = function ($src, $dst) {
@@ -134,8 +166,49 @@ $installPackage = function ($packageName, $options = []) use ($modx, $downloadPa
 };
 
 $success = false;
+$output = '';
 switch ($options[xPDOTransport::PACKAGE_ACTION]) {
     case xPDOTransport::ACTION_INSTALL:
+
+        $modx->log(MODX_LOG_LEVEL_INFO, "Мы попали в <b>INSTALL</b> и по идее должно что то выпасть");
+
+        if (!empty($packages)) {
+            $modx->log(MODX_LOG_LEVEL_INFO, 'Есть $packages');
+            $chunks = '<ul id="formCheckboxes" style="height:200px;overflow:auto;">';
+            foreach ($packages as $k => $v) {
+                $chunks .= '
+				<li>
+					<label>
+						<input type="checkbox" name="install_packages[]" value="' . $k . '"> ' . $k . '
+					</label>
+				</li>';
+            }
+            $chunks .= '</ul>';
+        }
+
+        foreach ($packages as $name => $data) {
+            if (!is_array($data)) {
+                $data = ['version' => $data];
+            }
+            $installed = $modx->getIterator('transport.modTransportPackage', ['package_name' => $name]);
+            /** @var modTransportPackage $package */
+            foreach ($installed as $package) {
+                if ($package->compareVersion($data['version'], '<=')) {
+                    continue(2);
+                }
+            }
+            $modx->log(modX::LOG_LEVEL_INFO, "Trying to install <b>{$name}</b>. Please wait...");
+            $response = $installPackage($name, $data);
+            $level = $response['success']
+                ? modX::LOG_LEVEL_INFO
+                : modX::LOG_LEVEL_ERROR;
+            $modx->log($level, $response['message']);
+        }
+        $success = true;
+
+
+        break;
+
     case xPDOTransport::ACTION_UPGRADE:
         foreach ($packages as $name => $data) {
             if (!is_array($data)) {
@@ -159,8 +232,10 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         break;
 
     case xPDOTransport::ACTION_UNINSTALL:
+        $modx->log(MODX_LOG_LEVEL_INFO, "Мы удаляем пакет");
         $success = true;
         break;
 }
+
 
 return $success;

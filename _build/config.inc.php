@@ -11,18 +11,18 @@ if (!defined('MODX_CORE_PATH')) {
 return [
     'name' => 'setCom',
     'name_lower' => 'setcom',
-    'version' => '2.0.0',
+    'version' => '1.0.0',
     'release' => 'pl',
     // Install package to site right after build
-    'install' => true,
+    'install' => false,
     // Which elements should be updated on package upgrade
     'update' => [
         'chunks' => false,
-        'menus' => true,
-        'plugins' => true,
+        'menus' => false,
+        'plugins' => false,
         'resources' => false,
-        'settings' => false,
-        'snippets' => true,
+        'settings' => true,
+        'snippets' => false,
         'templates' => false,
         'widgets' => false,
     ],
